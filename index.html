@@ -145,7 +145,6 @@
                 const { title, date, text, imageFile, existingImageUrl } = pageData;
                 let imageUrl = existingImageUrl;
 
-                // This block now throws errors instead of using alert()
                 try {
                     if (imageFile) {
                         if (pageId && existingImageUrl) {
@@ -169,17 +168,13 @@
                         data.createdAt = window.firebaseFirestore.serverTimestamp();
                         await window.firebaseFirestore.addDoc(window.firebaseFirestore.collection(db, "pages"), data);
                     }
-                    
-                    closeEditModal();
                 } catch (err) {
                     console.error("Error saving page:", err);
-                    // Re-throw the error to be caught by the modal
                     throw new Error("Failed to save memory. Check permissions or network.");
                 }
             };
 
             const handleDeletePage = async (page) => {
-                // Removed the unreliable window.confirm()
                 if (!db || !storage) return;
                 
                 try {
@@ -387,10 +382,10 @@
                 setIsSaving(true);
                 try {
                     await onSave({ title, date, text, imageFile, existingImageUrl: pageToEdit?.imageUrl }, pageToEdit?.id);
+                    onClose(); // Call onClose only after onSave is successful
                 } catch (err) {
                     setError(err.message || "An unknown error occurred.");
-                } finally {
-                    setIsSaving(false);
+                    setIsSaving(false); // Reset button state on error
                 }
             };
 
