@@ -71,8 +71,8 @@
         const EditIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>;
         const TrashIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" /></svg>;
         const CloseIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>;
-        const ArrowLeftIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>;
-        const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>;
+        const ArrowLeftIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>;
+        const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>;
 
         function App() {
             const [db, setDb] = useState(null);
@@ -229,8 +229,8 @@
                     return x - Math.floor(x);
                 };
                 return allImageUrls.map((_, i) => ({
-                    transform: `rotate(${pseudoRandom(i * 3) * 20 - 10}deg)`,
-                    top: `${5 + pseudoRandom(i * 5) * 35}%`,
+                    transform: `rotate(${pseudoRandom(i * 3) * 16 - 8}deg)`,
+                    top: `${5 + pseudoRandom(i * 5) * 40}%`,
                     left: `${5 + pseudoRandom(i * 7) * 65}%`,
                     zIndex: allImageUrls.length - i,
                 }));
@@ -242,7 +242,7 @@
                     <div className="relative h-80 w-full paper-bg p-4 rounded-lg shadow-inner cursor-pointer mt-4" onClick={() => onView(memories)}>
                         {allImageUrls.map((url, i) => (
                             <div key={url + i} className="absolute p-2 bg-white shadow-lg rounded transform transition-transform duration-300 hover:scale-110 hover:z-50" style={collageStyles[i]}>
-                                <img src={url} alt="" className="w-48 h-auto rounded-sm"/>
+                                <img src={url} alt="" className="w-40 md:w-56 h-auto rounded-sm"/>
                             </div>
                         ))}
                     </div>
@@ -250,53 +250,51 @@
             );
         }
 
-        function ImageViewModal({ memoryGroup, onClose, onEdit, onDelete }) {
-            const flatGallery = useMemo(() => memoryGroup.flatMap(mem => mem.imageUrls.map(url => ({ url, memory: mem }))), [memoryGroup]);
-            const [flatIndex, setFlatIndex] = useState(0);
-
-            const handleNext = () => setFlatIndex(prev => (prev + 1) % flatGallery.length);
-            const handlePrev = () => setFlatIndex(prev => (prev - 1 + flatGallery.length) % flatGallery.length);
-            
-            useEffect(() => {
-                const handleKeyDown = (e) => {
-                    if (e.key === 'ArrowRight') handleNext();
-                    if (e.key === 'ArrowLeft') handlePrev();
-                    if (e.key === 'Escape') onClose();
-                };
-                window.addEventListener('keydown', handleKeyDown);
-                return () => window.removeEventListener('keydown', handleKeyDown);
-            }, [flatGallery.length]);
-
-            const currentItem = flatGallery[flatIndex];
-            const currentMemory = currentItem.memory;
+        function ImageCarousel({ imageUrls }) {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const handleNext = (e) => { e.stopPropagation(); setCurrentIndex(prev => (prev + 1) % imageUrls.length); };
+            const handlePrev = (e) => { e.stopPropagation(); setCurrentIndex(prev => (prev - 1 + imageUrls.length) % imageUrls.length); };
 
             return (
+                <div className="relative w-full aspect-square bg-stone-100">
+                    <img src={imageUrls[currentIndex]} className="w-full h-full object-cover" />
+                    {imageUrls.length > 1 && (
+                        <>
+                            <button onClick={handlePrev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white rounded-full p-1 hover:bg-black/50 transition"><ArrowLeftIcon /></button>
+                            <button onClick={handleNext} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white rounded-full p-1 hover:bg-black/50 transition"><ArrowRightIcon /></button>
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                {imageUrls.map((_, i) => <div key={i} className={`h-2 w-2 rounded-full ${i === currentIndex ? 'bg-white' : 'bg-white/50'}`} />)}
+                            </div>
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        function ImageViewModal({ memoryGroup, onClose, onEdit, onDelete }) {
+            return (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4" onClick={onClose}>
-                    <div className="relative w-full h-full flex items-center justify-center">
-                        <div key={currentItem.url} className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden animate-fade-in" onClick={e => e.stopPropagation()}>
-                            <div className="w-full md:w-2/3 bg-stone-100 flex items-center justify-center flex-shrink-0">
-                                <img src={currentItem.url} alt={currentMemory.title} className="w-full h-auto max-h-[50vh] md:max-h-full object-contain" />
-                            </div>
-                            <div className="w-full md:w-1/3 p-6 flex flex-col overflow-y-auto">
-                                <div className="flex-grow">
-                                    <h2 className="font-heading text-5xl text-stone-800 mb-2">{currentMemory.title}</h2>
-                                    <p className="text-xl text-stone-500 mb-4">{new Date(currentMemory.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                                    <p className="text-2xl text-stone-700 leading-relaxed whitespace-pre-wrap">{currentMemory.text}</p>
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col animate-fade-in" onClick={e => e.stopPropagation()}>
+                        <div className="overflow-y-auto">
+                            {memoryGroup.map(memory => (
+                                <div key={memory.id} className="border-b border-stone-200">
+                                    <div className="p-4 flex justify-between items-center">
+                                        <h2 className="text-3xl text-stone-800">{memory.title}</h2>
+                                        <p className="text-lg text-stone-500">{new Date(memory.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                    </div>
+                                    <ImageCarousel imageUrls={memory.imageUrls} />
+                                    <div className="p-4">
+                                        <p className="text-2xl text-stone-700 leading-relaxed whitespace-pre-wrap mb-4">{memory.text}</p>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => onEdit(memory)} className="text-lg flex items-center gap-2 bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-full hover:bg-stone-300 transition-colors"><EditIcon /> Edit</button>
+                                            <button onClick={() => onDelete(memory)} className="text-lg flex items-center gap-2 bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red-600 transition-colors"><TrashIcon /> Delete</button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="flex-shrink-0 pt-4 flex gap-2">
-                                    <button onClick={() => onEdit(currentMemory)} className="text-lg flex items-center gap-2 bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-full hover:bg-stone-300 transition-colors"><EditIcon /> Edit</button>
-                                    <button onClick={() => onDelete(currentMemory)} className="text-lg flex items-center gap-2 bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red-600 transition-colors"><TrashIcon /> Delete</button>
-                                </div>
-                            </div>
+                            ))}
                         </div>
-                        {flatGallery.length > 1 && (
-                            <>
-                                <button onClick={e => { e.stopPropagation(); handlePrev(); }} className="absolute left-2 md:left-8 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowLeftIcon /></button>
-                                <button onClick={e => { e.stopPropagation(); handleNext(); }} className="absolute right-2 md:right-8 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowRightIcon /></button>
-                            </>
-                        )}
-                        <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-stone-300"><CloseIcon /></button>
                     </div>
+                    <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-stone-300"><CloseIcon /></button>
                 </div>
             );
         }
