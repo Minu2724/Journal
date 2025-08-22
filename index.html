@@ -223,12 +223,18 @@
 
         function TitleGroup({ title, memories, onView, theme }) {
             const allImageUrls = useMemo(() => memories.flatMap(mem => mem.imageUrls), [memories]);
-            const collageStyles = useMemo(() => allImageUrls.map((_, i) => ({
-                transform: `rotate(${Math.random() * 20 - 10}deg)`,
-                top: `${5 + Math.random() * 35}%`,
-                left: `${5 + Math.random() * 65}%`,
-                zIndex: allImageUrls.length - i,
-            })), [allImageUrls.length]);
+            const collageStyles = useMemo(() => {
+                const pseudoRandom = (seed) => {
+                    let x = Math.sin(seed) * 10000;
+                    return x - Math.floor(x);
+                };
+                return allImageUrls.map((_, i) => ({
+                    transform: `rotate(${pseudoRandom(i * 3) * 20 - 10}deg)`,
+                    top: `${5 + pseudoRandom(i * 5) * 35}%`,
+                    left: `${5 + pseudoRandom(i * 7) * 65}%`,
+                    zIndex: allImageUrls.length - i,
+                }));
+            }, [allImageUrls]);
 
             return (
                 <div className="mt-8 mb-10">
