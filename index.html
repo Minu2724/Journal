@@ -256,10 +256,19 @@
         function FullScreenView({ memoryGroup, onClose, onEdit, onDelete }) {
             const flatGallery = useMemo(() => memoryGroup.flatMap(mem => mem.imageUrls.map(url => ({ url, memory: mem }))), [memoryGroup]);
             const [flatIndex, setFlatIndex] = useState(0);
+            const touchStartX = useRef(0);
 
             const handleNext = () => setFlatIndex(prev => (prev + 1) % flatGallery.length);
             const handlePrev = () => setFlatIndex(prev => (prev - 1 + flatGallery.length) % flatGallery.length);
             
+            const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+            const handleTouchEnd = (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const deltaX = touchEndX - touchStartX.current;
+                if (deltaX > 50) handlePrev();
+                else if (deltaX < -50) handleNext();
+            };
+
             useEffect(() => {
                 const handleKeyDown = (e) => {
                     if (e.key === 'ArrowRight') handleNext();
@@ -277,12 +286,12 @@
                 <div className="fixed inset-0 bg-stone-100 z-50 animate-fade-in overflow-y-auto">
                     <button onClick={onClose} className="fixed top-4 right-4 text-stone-800 hover:text-red-500 z-30"><CloseIcon /></button>
                     <div className="w-full min-h-full flex flex-col md:flex-row">
-                        <div className="w-full md:w-3/4 md:h-screen bg-black flex items-center justify-center flex-shrink-0 relative">
+                        <div className="w-full md:w-3/4 md:h-screen bg-black flex items-center justify-center flex-shrink-0 relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
                             <img src={currentItem.url} alt={currentMemory.title} className="w-full h-auto md:h-full md:w-auto object-contain" />
                             {flatGallery.length > 1 && (
                                 <>
-                                    <button onClick={e => { e.stopPropagation(); handlePrev(); }} className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors z-10"><ArrowLeftIcon /></button>
-                                    <button onClick={e => { e.stopPropagation(); handleNext(); }} className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors z-10"><ArrowRightIcon /></button>
+                                    <button onClick={e => { e.stopPropagation(); handlePrev(); }} className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors z-10 hidden md:block"><ArrowLeftIcon /></button>
+                                    <button onClick={e => { e.stopPropagation(); handleNext(); }} className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors z-10 hidden md:block"><ArrowRightIcon /></button>
                                 </>
                             )}
                         </div>
