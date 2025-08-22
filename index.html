@@ -33,25 +33,12 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato&family=Caveat:wght@700&display=swap');
-        
-        body { 
-            font-family: 'Lato', sans-serif;
-            background-color: #FDF6E3; /* Pastel Parchment */
-        }
-        
+        body { font-family: 'Lato', sans-serif; background-color: #FDF6E3; }
         .font-title { font-family: 'Caveat', cursive; }
         .font-heading { font-family: 'Playfair Display', serif; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
-
-        .paper-bg {
-            background-color: #fff;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f2e8e8' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
+        .paper-bg { background-color: #fff; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f2e8e8' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
     </style>
 </head>
 <body class="text-stone-700">
@@ -71,23 +58,10 @@
          measurementId: "G-DZ5VY3Z68B"
         };
 
-        // --- Monthly Color Themes (Greens & Blues) ---
         const colorThemes = {
-            0: { main: 'text-slate-600', medium: 'text-slate-500', light: 'border-slate-200' },      // Jan - Dusty Blue
-            1: { main: 'text-teal-700', medium: 'text-teal-600', light: 'border-teal-200' },        // Feb - Soft Teal
-            2: { main: 'text-emerald-600', medium: 'text-emerald-500', light: 'border-emerald-200' },// Mar - Sage Green
-            3: { main: 'text-sky-600', medium: 'text-sky-500', light: 'border-sky-200' },           // Apr - Light Sky Blue
-            4: { main: 'text-lime-700', medium: 'text-lime-600', light: 'border-lime-200' },        // May - Leafy Green
-            5: { main: 'text-cyan-600', medium: 'text-cyan-500', light: 'border-cyan-200' },        // Jun - Seafoam
-            6: { main: 'text-blue-600', medium: 'text-blue-500', light: 'border-blue-200' },        // Jul - Cornflower Blue
-            7: { main: 'text-green-700', medium: 'text-green-600', light: 'border-green-200' },    // Aug - Olive
-            8: { main: 'text-slate-700', medium: 'text-slate-600', light: 'border-slate-300' },      // Sep - Stormy Blue
-            9: { main: 'text-emerald-800', medium: 'text-emerald-700', light: 'border-emerald-300' },// Oct - Forest Green
-            10: { main: 'text-lime-800', medium: 'text-lime-700', light: 'border-lime-300' },       // Nov - Moss Green
-            11: { main: 'text-teal-800', medium: 'text-teal-700', light: 'border-teal-300' }        // Dec - Deep Teal
+            0: { main: 'text-slate-600', medium: 'text-slate-500', light: 'border-slate-200' }, 1: { main: 'text-teal-700', medium: 'text-teal-600', light: 'border-teal-200' }, 2: { main: 'text-emerald-600', medium: 'text-emerald-500', light: 'border-emerald-200' }, 3: { main: 'text-sky-600', medium: 'text-sky-500', light: 'border-sky-200' }, 4: { main: 'text-lime-700', medium: 'text-lime-600', light: 'border-lime-200' }, 5: { main: 'text-cyan-600', medium: 'text-cyan-500', light: 'border-cyan-200' }, 6: { main: 'text-blue-600', medium: 'text-blue-500', light: 'border-blue-200' }, 7: { main: 'text-green-700', medium: 'text-green-600', light: 'border-green-200' }, 8: { main: 'text-slate-700', medium: 'text-slate-600', light: 'border-slate-300' }, 9: { main: 'text-emerald-800', medium: 'text-emerald-700', light: 'border-emerald-300' }, 10: { main: 'text-lime-800', medium: 'text-lime-700', light: 'border-lime-300' }, 11: { main: 'text-teal-800', medium: 'text-teal-700', light: 'border-teal-300' }
         };
 
-        // --- SVG Icons ---
         const PlusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>;
         const PhotoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
         const HeartIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline-block text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" /></svg>;
@@ -97,13 +71,12 @@
         const ArrowLeftIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>;
         const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>;
 
-        // --- Main App Component ---
         function App() {
             const [db, setDb] = useState(null);
             const [storage, setStorage] = useState(null);
-            const [pages, setPages] = useState({});
+            const [memories, setMemories] = useState([]);
             const [isModalOpen, setIsModalOpen] = useState(false);
-            const [editingPage, setEditingPage] = useState(null);
+            const [editingMemory, setEditingMemory] = useState(null);
             const [viewingGroup, setViewingGroup] = useState(null);
             const [isLoading, setIsLoading] = useState(true);
             const [error, setError] = useState('');
@@ -120,81 +93,81 @@
                     window.firebaseAuth.onAuthStateChanged(auth, (user) => {
                         if (!user) window.firebaseAuth.signInAnonymously(auth).catch(console.error);
                     });
-                } catch (e) {
-                    console.error("Firebase initialization error:", e);
-                    setError("Could not initialize Firebase.");
-                }
+                } catch (e) { console.error("Firebase init error:", e); setError("Could not initialize Firebase."); }
             }, []);
 
             useEffect(() => {
                 if (!db) return;
-                const q = window.firebaseFirestore.query(window.firebaseFirestore.collection(db, "pages"));
-                const unsubscribe = window.firebaseFirestore.onSnapshot(q, (querySnapshot) => {
-                    const pagesData = [];
-                    querySnapshot.forEach((doc) => pagesData.push({ id: doc.id, ...doc.data() }));
-                    const grouped = pagesData.reduce((acc, page) => {
-                        const { date, title } = page;
-                        if (!acc[date]) acc[date] = {};
-                        if (!acc[date][title]) acc[date][title] = [];
-                        acc[date][title].push(page);
-                        return acc;
-                    }, {});
-                    setPages(grouped);
+                const memoriesQuery = window.firebaseFirestore.query(window.firebaseFirestore.collection(db, "memories"));
+                const unsubscribe = window.firebaseFirestore.onSnapshot(memoriesQuery, (snapshot) => {
+                    const memoriesData = [];
+                    snapshot.forEach((doc) => memoriesData.push({ id: doc.id, ...doc.data() }));
+                    setMemories(memoriesData);
                     setIsLoading(false);
-                }, (err) => {
-                    console.error("Firestore error:", err);
-                    setError("Could not load memories.");
-                    setIsLoading(false);
-                });
+                }, (err) => { console.error("Memories error:", err); setError("Could not load memories."); });
                 return () => unsubscribe();
             }, [db]);
 
-            const handleSavePage = async (pageData, pageId) => {
+            const handleSaveMemory = async (memoryData, memoryId) => {
                 if (!db || !storage) throw new Error("Database not connected.");
-                const { title, date, text, imageFile, existingImageUrl } = pageData;
-                let imageUrl = existingImageUrl;
+                const { title, date, text, newImageFiles, existingImageUrls } = memoryData;
 
-                if (imageFile && imageFile.file) {
-                    if (pageId && existingImageUrl) {
-                        try {
-                            const oldImageRef = window.firebaseStorage.ref(storage, existingImageUrl);
-                            await window.firebaseStorage.deleteObject(oldImageRef);
-                        } catch (deleteError) { console.warn("Could not delete old image:", deleteError); }
-                    }
-                    const imageRef = window.firebaseStorage.ref(storage, `images/${Date.now()}-${imageFile.file.name}`);
-                    await window.firebaseStorage.uploadString(imageRef, imageFile.dataUrl, 'data_url');
-                    imageUrl = await window.firebaseStorage.getDownloadURL(imageRef);
-                }
+                const uploadPromises = newImageFiles.map(file => {
+                    const imageRef = window.firebaseStorage.ref(storage, `images/${Date.now()}-${file.file.name}`);
+                    return window.firebaseStorage.uploadString(imageRef, file.dataUrl, 'data_url')
+                        .then(snapshot => window.firebaseStorage.getDownloadURL(snapshot.ref));
+                });
 
-                const data = { title, date, text, imageUrl };
-                if (pageId) {
-                    await window.firebaseFirestore.updateDoc(window.firebaseFirestore.doc(db, "pages", pageId), data);
+                const newImageUrls = await Promise.all(uploadPromises);
+                const allImageUrls = [...existingImageUrls, ...newImageUrls];
+
+                const data = { title, date, text, imageUrls: allImageUrls };
+                if (memoryId) {
+                    await window.firebaseFirestore.updateDoc(window.firebaseFirestore.doc(db, "memories", memoryId), data);
                 } else {
                     data.createdAt = window.firebaseFirestore.serverTimestamp();
-                    await window.firebaseFirestore.addDoc(window.firebaseFirestore.collection(db, "pages"), data);
+                    await window.firebaseFirestore.addDoc(window.firebaseFirestore.collection(db, "memories"), data);
                 }
             };
 
-            const handleDeletePage = async (page) => {
+            const handleDeleteMemory = async (memory) => {
                 if (!db || !storage) return;
                 try {
-                    await window.firebaseFirestore.deleteDoc(window.firebaseFirestore.doc(db, "pages", page.id));
-                    const imageRef = window.firebaseStorage.ref(storage, page.imageUrl);
-                    await window.firebaseStorage.deleteObject(imageRef);
+                    const deleteImagePromises = memory.imageUrls.map(url => {
+                        const imageRef = window.firebaseStorage.ref(storage, url);
+                        return window.firebaseStorage.deleteObject(imageRef);
+                    });
+                    await Promise.all(deleteImagePromises);
+                    await window.firebaseFirestore.deleteDoc(window.firebaseFirestore.doc(db, "memories", memory.id));
                     closeViewModal();
-                } catch (err) {
-                    console.error("Error deleting page:", err);
-                    alert("Failed to delete memory.");
-                }
+                } catch (err) { console.error("Error deleting memory:", err); alert("Failed to delete memory."); }
             };
             
-            const openEditModal = (page) => { setEditingPage(page); setIsModalOpen(true); };
-            const closeEditModal = () => { setIsModalOpen(false); setEditingPage(null); };
-            const handleEditFromView = (page) => { closeViewModal(); openEditModal(page); };
-            const openViewModal = (page, group) => setViewingGroup({ page, group });
+            const openEditModal = (mem) => { setEditingMemory(mem); setIsModalOpen(true); };
+            const closeEditModal = () => { setIsModalOpen(false); setEditingMemory(null); };
+            const handleEditFromView = (mem) => { closeViewModal(); openEditModal(mem); };
+            const openViewModal = (group) => setViewingGroup(group);
             const closeViewModal = () => setViewingGroup(null);
 
-            const sortedDates = Object.keys(pages).sort((a, b) => new Date(b) - new Date(a));
+            const memoriesByDateAndTitle = useMemo(() => {
+                const groupedByDate = memories.reduce((acc, mem) => {
+                    (acc[mem.date] = acc[mem.date] || []).push(mem);
+                    return acc;
+                }, {});
+
+                const finalGrouped = {};
+                for (const date in groupedByDate) {
+                    finalGrouped[date] = groupedByDate[date].reduce((acc, mem) => {
+                        (acc[mem.title] = acc[mem.title] || []).push(mem);
+                        return acc;
+                    }, {});
+                }
+                
+                return Object.keys(finalGrouped).sort((a, b) => new Date(b) - new Date(a)).reduce((acc, key) => {
+                    acc[key] = finalGrouped[key];
+                    return acc;
+                }, {});
+            }, [memories]);
 
             if (error) return <div className="h-screen flex items-center justify-center bg-red-100 text-red-800 p-4"><div className="text-center"><h2 className="text-2xl font-bold mb-2">Something went wrong!</h2><p>{error}</p></div></div>;
 
@@ -209,18 +182,18 @@
                             <PlusIcon /> Add a Memory
                         </button>
                     </div>
-                    {isModalOpen && <MemoryModal onClose={closeEditModal} onSave={handleSavePage} pageToEdit={editingPage} />}
-                    {viewingGroup && <ImageViewModal initialPage={viewingGroup.page} pageGroup={viewingGroup.group} onClose={closeViewModal} onEdit={handleEditFromView} onDelete={handleDeletePage} />}
+                    {isModalOpen && <MemoryModal onClose={closeEditModal} onSave={handleSaveMemory} memoryToEdit={editingMemory} />}
+                    {viewingGroup && <ImageViewModal memoryGroup={viewingGroup} onClose={closeViewModal} onEdit={handleEditFromView} onDelete={handleDeleteMemory} />}
                     <main>
                         {isLoading ? <div className="text-center text-stone-600 font-heading text-xl">Loading memories...</div>
-                        : sortedDates.length === 0 ? (
+                        : Object.keys(memoriesByDateAndTitle).length === 0 ? (
                             <div className="text-center text-stone-500 p-10 bg-white/60 rounded-lg shadow-md">
                                 <h2 className="text-2xl font-heading font-semibold mb-2">Your scrapbook is empty!</h2>
                                 <p>Click "Add a Memory" to save your first special moment together.</p>
                             </div>
                         ) : (
                             <div className="space-y-16">
-                                {sortedDates.map(date => <DateGroup key={date} date={date} titleGroups={pages[date]} onView={openViewModal} />)}
+                                {Object.entries(memoriesByDateAndTitle).map(([date, titleGroups]) => <DateGroup key={date} date={date} titleGroups={titleGroups} onView={openViewModal} />)}
                             </div>
                         )}
                     </main>
@@ -233,32 +206,34 @@
             const monthIndex = new Date(date + 'T00:00:00').getMonth();
             const theme = colorThemes[monthIndex];
             const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            const sortedTitles = Object.keys(titleGroups).sort();
             return (
                 <section>
                     <h2 className={`font-heading text-3xl font-bold ${theme.main} mb-6 pb-3 border-b-2 ${theme.light}`}>{formattedDate}</h2>
-                    {sortedTitles.map(title => <TitleGroup key={title} title={title} memories={titleGroups[title]} onView={onView} theme={theme} />)}
+                    <div className="space-y-10">
+                        {Object.entries(titleGroups).map(([title, memories]) => (
+                            <TitleGroup key={title} title={title} memories={memories} onView={onView} theme={theme} />
+                        ))}
+                    </div>
                 </section>
             );
         }
 
         function TitleGroup({ title, memories, onView, theme }) {
-            const sortedMemories = [...memories].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-            const collageStyles = useMemo(() => sortedMemories.map((_, index) => ({
-                transform: `rotate(${(index * 13) % 16 - 8}deg)`,
-                top: `${(index * 17) % 30}%`,
-                left: `${(index * 23) % 50}%`,
-                zIndex: sortedMemories.length - index,
-            })), [sortedMemories.length]);
+            const allImageUrls = useMemo(() => memories.flatMap(mem => mem.imageUrls), [memories]);
+            const collageStyles = useMemo(() => allImageUrls.map((_, i) => ({
+                transform: `rotate(${(i * 13) % 16 - 8}deg)`,
+                top: `${(i * 17) % 40}%`,
+                left: `${(i * 29) % 70}%`,
+                zIndex: allImageUrls.length - i,
+            })), [allImageUrls]);
 
             return (
                 <div className="mt-8 mb-10">
                     <h3 className={`font-heading text-2xl font-semibold ${theme.medium} mb-5`}>{title}</h3>
-                    <div className="relative h-72 w-full paper-bg p-4 rounded-lg shadow-inner">
-                        {sortedMemories.map((page, index) => (
-                            <div key={page.id} className="absolute p-2 bg-white shadow-lg rounded transform transition-transform duration-300 hover:scale-110 hover:z-50 cursor-pointer"
-                                style={collageStyles[index]} onClick={() => onView(page, sortedMemories)}>
-                                <img src={page.imageUrl} alt={page.title} className="w-48 h-auto rounded-sm" onError={(e) => { e.target.src='https://placehold.co/600x400/fecdd3/701a75?text=Image+Not+Found'; }}/>
+                    <div className="relative h-80 w-full paper-bg p-4 rounded-lg shadow-inner cursor-pointer" onClick={() => onView(memories)}>
+                        {allImageUrls.map((url, i) => (
+                            <div key={url + i} className="absolute p-2 bg-white shadow-lg rounded transform transition-transform duration-300 hover:scale-110 hover:z-50" style={collageStyles[i]}>
+                                <img src={url} alt="" className="w-48 h-auto rounded-sm"/>
                             </div>
                         ))}
                     </div>
@@ -266,11 +241,12 @@
             );
         }
 
-        function ImageViewModal({ initialPage, pageGroup, onClose, onEdit, onDelete }) {
-            const [currentIndex, setCurrentIndex] = useState(() => pageGroup.findIndex(p => p.id === initialPage.id));
-            const currentPage = pageGroup[currentIndex];
-            const handleNext = () => setCurrentIndex(prev => (prev + 1) % pageGroup.length);
-            const handlePrev = () => setCurrentIndex(prev => (prev - 1 + pageGroup.length) % pageGroup.length);
+        function ImageViewModal({ memoryGroup, onClose, onEdit, onDelete }) {
+            const flatGallery = useMemo(() => memoryGroup.flatMap(mem => mem.imageUrls.map(url => ({ url, memory: mem }))), [memoryGroup]);
+            const [flatIndex, setFlatIndex] = useState(0);
+
+            const handleNext = () => setFlatIndex(prev => (prev + 1) % flatGallery.length);
+            const handlePrev = () => setFlatIndex(prev => (prev - 1 + flatGallery.length) % flatGallery.length);
             
             useEffect(() => {
                 const handleKeyDown = (e) => {
@@ -280,28 +256,31 @@
                 };
                 window.addEventListener('keydown', handleKeyDown);
                 return () => window.removeEventListener('keydown', handleKeyDown);
-            }, [pageGroup.length]);
+            }, [flatGallery.length]);
+
+            const currentItem = flatGallery[flatIndex];
+            const currentMemory = currentItem.memory;
 
             return (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4" onClick={onClose}>
                     <div className="relative w-full h-full flex items-center justify-center">
-                        <div key={currentPage.id} className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden animate-fade-in" onClick={e => e.stopPropagation()}>
+                        <div key={currentItem.url} className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden animate-fade-in" onClick={e => e.stopPropagation()}>
                             <div className="w-full md:w-2/3 bg-stone-100 flex items-center justify-center flex-shrink-0">
-                                <img src={currentPage.imageUrl} alt={currentPage.title} className="w-full h-auto max-h-[50vh] md:max-h-full object-contain" />
+                                <img src={currentItem.url} alt={currentMemory.title} className="w-full h-auto max-h-[50vh] md:max-h-full object-contain" />
                             </div>
                             <div className="w-full md:w-1/3 p-6 flex flex-col overflow-y-auto">
                                 <div className="flex-grow">
-                                    <h2 className="font-heading text-3xl font-bold text-stone-800 mb-2">{currentPage.title}</h2>
-                                    <p className="text-sm text-stone-500 mb-4">{new Date(currentPage.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                                    <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">{currentPage.text}</p>
+                                    <h2 className="font-heading text-3xl font-bold text-stone-800 mb-2">{currentMemory.title}</h2>
+                                    <p className="text-sm text-stone-500 mb-4">{new Date(currentMemory.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">{currentMemory.text}</p>
                                 </div>
                                 <div className="flex-shrink-0 pt-4 flex gap-2">
-                                    <button onClick={() => onEdit(currentPage)} className="flex items-center gap-2 bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-full hover:bg-stone-300 transition-colors"><EditIcon /> Edit</button>
-                                    <button onClick={() => onDelete(currentPage)} className="flex items-center gap-2 bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red-600 transition-colors"><TrashIcon /> Delete</button>
+                                    <button onClick={() => onEdit(currentMemory)} className="flex items-center gap-2 bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-full hover:bg-stone-300 transition-colors"><EditIcon /> Edit</button>
+                                    <button onClick={() => onDelete(currentMemory)} className="flex items-center gap-2 bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red-600 transition-colors"><TrashIcon /> Delete</button>
                                 </div>
                             </div>
                         </div>
-                        {pageGroup.length > 1 && (
+                        {flatGallery.length > 1 && (
                             <>
                                 <button onClick={e => { e.stopPropagation(); handlePrev(); }} className="absolute left-2 md:left-8 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowLeftIcon /></button>
                                 <button onClick={e => { e.stopPropagation(); handleNext(); }} className="absolute right-2 md:right-8 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowRightIcon /></button>
@@ -313,36 +292,41 @@
             );
         }
 
-        function MemoryModal({ onClose, onSave, pageToEdit }) {
-            const [title, setTitle] = useState(pageToEdit?.title || '');
-            const [date, setDate] = useState(pageToEdit?.date || new Date().toISOString().split('T')[0]);
-            const [text, setText] = useState(pageToEdit?.text || '');
-            const [imageFile, setImageFile] = useState(null);
-            const [imagePreview, setImagePreview] = useState(pageToEdit?.imageUrl || null);
+        function MemoryModal({ onClose, onSave, memoryToEdit }) {
+            const [title, setTitle] = useState(memoryToEdit?.title || '');
+            const [date, setDate] = useState(memoryToEdit?.date || new Date().toISOString().split('T')[0]);
+            const [text, setText] = useState(memoryToEdit?.text || '');
+            const [newImageFiles, setNewImageFiles] = useState([]);
+            const [existingImageUrls, setExistingImageUrls] = useState(memoryToEdit?.imageUrls || []);
             const [isSaving, setIsSaving] = useState(false);
             const [error, setError] = useState('');
             const modalRef = useRef();
 
             const handleImageChange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        setImagePreview(reader.result);
-                        setImageFile({ file, dataUrl: reader.result });
-                    };
-                    reader.readAsDataURL(file);
-                }
+                const files = Array.from(e.target.files);
+                const filePromises = files.map(file => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve({ file, dataUrl: reader.result });
+                        reader.readAsDataURL(file);
+                    });
+                });
+                Promise.all(filePromises).then(newFiles => {
+                    setNewImageFiles(prev => [...prev, ...newFiles]);
+                });
             };
+            
+            const removeNewImage = (index) => setNewImageFiles(prev => prev.filter((_, i) => i !== index));
+            const removeExistingImage = (url) => setExistingImageUrls(prev => prev.filter(u => u !== url));
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                if (!title || !date || !text || !imagePreview) {
-                    setError('Please fill out all fields and select an image.'); return;
+                if (!title || !date || !text || (newImageFiles.length === 0 && existingImageUrls.length === 0)) {
+                    setError('Please fill out all fields and add at least one photo.'); return;
                 }
                 setError(''); setIsSaving(true);
                 try {
-                    await onSave({ title, date, text, imageFile, existingImageUrl: pageToEdit?.imageUrl }, pageToEdit?.id);
+                    await onSave({ title, date, text, newImageFiles, existingImageUrls }, memoryToEdit?.id);
                     onClose(); 
                 } catch (err) {
                     console.error("Detailed Save Error:", err);
@@ -359,8 +343,8 @@
                 return () => document.removeEventListener("mousedown", handleClickOutside);
             }, [onClose]);
 
-            const modalTitle = pageToEdit ? "Edit Memory" : "Add a New Memory";
-            const saveButtonText = pageToEdit ? "Update Memory" : "Save Memory";
+            const modalTitle = memoryToEdit ? "Edit Memory" : "Add a New Memory";
+            const saveButtonText = memoryToEdit ? "Update Memory" : "Save Memory";
 
             return (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4">
@@ -381,14 +365,28 @@
                                     <textarea id="text" value={text} onChange={(e) => setText(e.target.value)} rows="4" className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-stone-400" required></textarea>
                                 </div>
                                 <div className="mb-6">
-                                    <label className="block text-stone-700 font-bold mb-2">Photo</label>
+                                    <label className="block text-stone-700 font-bold mb-2">Photos</label>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2">
+                                        {existingImageUrls.map(url => (
+                                            <div key={url} className="relative group">
+                                                <img src={url} className="w-full h-24 object-cover rounded-md"/>
+                                                <button type="button" onClick={() => removeExistingImage(url)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100">&times;</button>
+                                            </div>
+                                        ))}
+                                        {newImageFiles.map((file, index) => (
+                                            <div key={index} className="relative group">
+                                                <img src={file.dataUrl} className="w-full h-24 object-cover rounded-md"/>
+                                                <button type="button" onClick={() => removeNewImage(index)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100">&times;</button>
+                                            </div>
+                                        ))}
+                                    </div>
                                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-stone-300 border-dashed rounded-md">
                                         <div className="space-y-1 text-center">
-                                            {imagePreview ? <img src={imagePreview} alt="Preview" className="mx-auto h-32 w-auto rounded-md" /> : <PhotoIcon />}
+                                            <PhotoIcon />
                                             <div className="flex text-sm text-stone-600">
                                                 <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-stone-700 hover:text-stone-600">
-                                                    <span>{pageToEdit ? 'Change photo' : 'Upload a file'}</span>
-                                                    <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" />
+                                                    <span>Upload photos</span>
+                                                    <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageChange} multiple accept="image/*" />
                                                 </label>
                                             </div>
                                         </div>
