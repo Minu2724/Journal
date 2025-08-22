@@ -32,22 +32,35 @@
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
-        body { font-family: 'Playfair Display', serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato&family=Caveat:wght@700&display=swap');
+        
+        body { 
+            font-family: 'Lato', sans-serif;
+            background-color: #FDF6E3; /* Pastel Parchment */
+        }
+        
+        .font-title { font-family: 'Caveat', cursive; }
+        .font-heading { font-family: 'Playfair Display', serif; }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.98); }
             to { opacity: 1; transform: scale(1); }
         }
-        .animate-fade-in { animation: fadeIn 0.4s ease-in-out; }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+
+        .paper-bg {
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f2e8e8' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
     </style>
 </head>
-<body class="bg-rose-50">
+<body class="text-stone-700">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // --- Your Firebase Config ---
         const firebaseConfig = {
          apiKey: "AIzaSyBMB4L4afnqvXhyGaeipK9n8J1ngPi_aXo",
          authDomain: "journal-5f937.firebaseapp.com",
@@ -56,6 +69,22 @@
          messagingSenderId: "981844182431",
          appId: "1:981844182431:web:2da6941df9acad21fc69aa",
          measurementId: "G-DZ5VY3Z68B"
+        };
+
+        // --- Monthly Color Themes (Greens & Blues) ---
+        const colorThemes = {
+            0: { main: 'text-slate-600', medium: 'text-slate-500', light: 'border-slate-200' },      // Jan - Dusty Blue
+            1: { main: 'text-teal-700', medium: 'text-teal-600', light: 'border-teal-200' },        // Feb - Soft Teal
+            2: { main: 'text-emerald-600', medium: 'text-emerald-500', light: 'border-emerald-200' },// Mar - Sage Green
+            3: { main: 'text-sky-600', medium: 'text-sky-500', light: 'border-sky-200' },           // Apr - Light Sky Blue
+            4: { main: 'text-lime-700', medium: 'text-lime-600', light: 'border-lime-200' },        // May - Leafy Green
+            5: { main: 'text-cyan-600', medium: 'text-cyan-500', light: 'border-cyan-200' },        // Jun - Seafoam
+            6: { main: 'text-blue-600', medium: 'text-blue-500', light: 'border-blue-200' },        // Jul - Cornflower Blue
+            7: { main: 'text-green-700', medium: 'text-green-600', light: 'border-green-200' },    // Aug - Olive
+            8: { main: 'text-slate-700', medium: 'text-slate-600', light: 'border-slate-300' },      // Sep - Stormy Blue
+            9: { main: 'text-emerald-800', medium: 'text-emerald-700', light: 'border-emerald-300' },// Oct - Forest Green
+            10: { main: 'text-lime-800', medium: 'text-lime-700', light: 'border-lime-300' },       // Nov - Moss Green
+            11: { main: 'text-teal-800', medium: 'text-teal-700', light: 'border-teal-300' }        // Dec - Deep Teal
         };
 
         // --- SVG Icons ---
@@ -81,9 +110,7 @@
 
             useEffect(() => {
                 if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
-                    setError("Firebase config is missing. Please add your credentials to the HTML file.");
-                    setIsLoading(false);
-                    return;
+                    setError("Firebase config is missing."); setIsLoading(false); return;
                 }
                 try {
                     const app = window.firebaseApp.initializeApp(firebaseConfig);
@@ -95,7 +122,7 @@
                     });
                 } catch (e) {
                     console.error("Firebase initialization error:", e);
-                    setError("Could not initialize Firebase. Please check your config.");
+                    setError("Could not initialize Firebase.");
                 }
             }, []);
 
@@ -105,7 +132,6 @@
                 const unsubscribe = window.firebaseFirestore.onSnapshot(q, (querySnapshot) => {
                     const pagesData = [];
                     querySnapshot.forEach((doc) => pagesData.push({ id: doc.id, ...doc.data() }));
-                    
                     const grouped = pagesData.reduce((acc, page) => {
                         const { date, title } = page;
                         if (!acc[date]) acc[date] = {};
@@ -113,12 +139,11 @@
                         acc[date][title].push(page);
                         return acc;
                     }, {});
-                    
                     setPages(grouped);
                     setIsLoading(false);
                 }, (err) => {
                     console.error("Firestore error:", err);
-                    setError("Could not load memories. Check your Firestore rules.");
+                    setError("Could not load memories.");
                     setIsLoading(false);
                 });
                 return () => unsubscribe();
@@ -126,7 +151,6 @@
 
             const handleSavePage = async (pageData, pageId) => {
                 if (!db || !storage) throw new Error("Database not connected.");
-                
                 const { title, date, text, imageFile, existingImageUrl } = pageData;
                 let imageUrl = existingImageUrl;
 
@@ -135,9 +159,7 @@
                         try {
                             const oldImageRef = window.firebaseStorage.ref(storage, existingImageUrl);
                             await window.firebaseStorage.deleteObject(oldImageRef);
-                        } catch (deleteError) {
-                            console.warn("Could not delete old image:", deleteError);
-                        }
+                        } catch (deleteError) { console.warn("Could not delete old image:", deleteError); }
                     }
                     const imageRef = window.firebaseStorage.ref(storage, `images/${Date.now()}-${imageFile.file.name}`);
                     await window.firebaseStorage.uploadString(imageRef, imageFile.dataUrl, 'data_url');
@@ -177,63 +199,67 @@
             if (error) return <div className="h-screen flex items-center justify-center bg-red-100 text-red-800 p-4"><div className="text-center"><h2 className="text-2xl font-bold mb-2">Something went wrong!</h2><p>{error}</p></div></div>;
 
             return (
-                <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-                    <header className="text-center mb-8">
-                        <h1 className="text-4xl sm:text-5xl font-bold text-rose-800 tracking-tight">Our Scrapbook</h1>
-                        <p className="text-rose-600 mt-2 text-lg">A collection of our favorite moments <HeartIcon /></p>
+                <div className="container mx-auto p-4 sm:p-6 lg:p-12">
+                    <header className="text-center mb-12">
+                        <h1 className="font-title text-6xl sm:text-7xl text-stone-800">Our Scrapbook</h1>
+                        <p className="text-stone-600 mt-2 text-lg">A collection of our favorite moments <HeartIcon /></p>
                     </header>
-                    <div className="text-center mb-8">
-                        <button onClick={() => setIsModalOpen(true)} className="bg-rose-500 text-white font-bold py-3 px-6 rounded-full hover:bg-rose-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center mx-auto gap-2">
-                            <PlusIcon /> Add New Memory
+                    <div className="text-center mb-16">
+                        <button onClick={() => setIsModalOpen(true)} className="bg-stone-700 text-white font-bold py-3 px-8 rounded-full hover:bg-stone-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center mx-auto gap-2">
+                            <PlusIcon /> Add a Memory
                         </button>
                     </div>
                     {isModalOpen && <MemoryModal onClose={closeEditModal} onSave={handleSavePage} pageToEdit={editingPage} />}
                     {viewingGroup && <ImageViewModal initialPage={viewingGroup.page} pageGroup={viewingGroup.group} onClose={closeViewModal} onEdit={handleEditFromView} onDelete={handleDeletePage} />}
                     <main>
-                        {isLoading ? <div className="text-center text-rose-500">Loading memories...</div>
+                        {isLoading ? <div className="text-center text-stone-600 font-heading text-xl">Loading memories...</div>
                         : sortedDates.length === 0 ? (
-                            <div className="text-center text-gray-500 p-10 bg-white rounded-lg shadow-md">
-                                <h2 className="text-2xl font-semibold mb-2">Your scrapbook is empty!</h2>
-                                <p>Click "Add New Memory" to save your first special moment together.</p>
+                            <div className="text-center text-stone-500 p-10 bg-white/60 rounded-lg shadow-md">
+                                <h2 className="text-2xl font-heading font-semibold mb-2">Your scrapbook is empty!</h2>
+                                <p>Click "Add a Memory" to save your first special moment together.</p>
                             </div>
                         ) : (
-                            <div className="space-y-12">
+                            <div className="space-y-16">
                                 {sortedDates.map(date => <DateGroup key={date} date={date} titleGroups={pages[date]} onView={openViewModal} />)}
                             </div>
                         )}
                     </main>
-                    <footer className="text-center mt-12 text-sm text-rose-400"><p>Made with love, for us.</p></footer>
+                    <footer className="text-center mt-16 text-sm text-stone-500"><p>Made with love, for us.</p></footer>
                 </div>
             );
         }
 
         function DateGroup({ date, titleGroups, onView }) {
+            const monthIndex = new Date(date + 'T00:00:00').getMonth();
+            const theme = colorThemes[monthIndex];
             const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             const sortedTitles = Object.keys(titleGroups).sort();
             return (
                 <section>
-                    <h2 className="text-2xl font-bold text-rose-700 mb-4 pb-2 border-b-2 border-rose-200">{formattedDate}</h2>
-                    {sortedTitles.map(title => <TitleGroup key={title} title={title} memories={titleGroups[title]} onView={onView} />)}
+                    <h2 className={`font-heading text-3xl font-bold ${theme.main} mb-6 pb-3 border-b-2 ${theme.light}`}>{formattedDate}</h2>
+                    {sortedTitles.map(title => <TitleGroup key={title} title={title} memories={titleGroups[title]} onView={onView} theme={theme} />)}
                 </section>
             );
         }
 
-        function TitleGroup({ title, memories, onView }) {
+        function TitleGroup({ title, memories, onView, theme }) {
             const sortedMemories = [...memories].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
             const collageStyles = useMemo(() => sortedMemories.map((_, index) => ({
-                transform: `rotate(${(index * 13) % 20 - 10}deg)`,
-                top: `${(index * 17) % 40}%`,
+                transform: `rotate(${(index * 13) % 16 - 8}deg)`,
+                top: `${(index * 17) % 30}%`,
                 left: `${(index * 23) % 50}%`,
                 zIndex: sortedMemories.length - index,
             })), [sortedMemories.length]);
 
             return (
-                <div className="mt-6 mb-8">
-                    <h3 className="text-xl font-semibold text-rose-600 mb-4">{title}</h3>
-                    <div className="relative h-64 w-full bg-white p-4 rounded-lg shadow-lg">
+                <div className="mt-8 mb-10">
+                    <h3 className={`font-heading text-2xl font-semibold ${theme.medium} mb-5`}>{title}</h3>
+                    <div className="relative h-72 w-full paper-bg p-4 rounded-lg shadow-inner">
                         {sortedMemories.map((page, index) => (
-                            <img key={page.id} src={page.imageUrl} alt={page.title} className="absolute w-48 h-auto p-1 bg-white shadow-md rounded transform transition-transform duration-300 hover:scale-110 hover:z-50 cursor-pointer"
-                                style={collageStyles[index]} onClick={() => onView(page, sortedMemories)} onError={(e) => { e.target.src='https://placehold.co/600x400/fecdd3/701a75?text=Image+Not+Found'; }}/>
+                            <div key={page.id} className="absolute p-2 bg-white shadow-lg rounded transform transition-transform duration-300 hover:scale-110 hover:z-50 cursor-pointer"
+                                style={collageStyles[index]} onClick={() => onView(page, sortedMemories)}>
+                                <img src={page.imageUrl} alt={page.title} className="w-48 h-auto rounded-sm" onError={(e) => { e.target.src='https://placehold.co/600x400/fecdd3/701a75?text=Image+Not+Found'; }}/>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -257,31 +283,31 @@
             }, [pageGroup.length]);
 
             return (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4" onClick={onClose}>
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4" onClick={onClose}>
                     <div className="relative w-full h-full flex items-center justify-center">
                         <div key={currentPage.id} className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden animate-fade-in" onClick={e => e.stopPropagation()}>
-                            <div className="w-full md:w-2/3 bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <div className="w-full md:w-2/3 bg-stone-100 flex items-center justify-center flex-shrink-0">
                                 <img src={currentPage.imageUrl} alt={currentPage.title} className="w-full h-auto max-h-[50vh] md:max-h-full object-contain" />
                             </div>
                             <div className="w-full md:w-1/3 p-6 flex flex-col overflow-y-auto">
                                 <div className="flex-grow">
-                                    <h2 className="text-3xl font-bold text-rose-800 mb-2">{currentPage.title}</h2>
-                                    <p className="text-sm text-gray-500 mb-4">{new Date(currentPage.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{currentPage.text}</p>
+                                    <h2 className="font-heading text-3xl font-bold text-stone-800 mb-2">{currentPage.title}</h2>
+                                    <p className="text-sm text-stone-500 mb-4">{new Date(currentPage.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">{currentPage.text}</p>
                                 </div>
                                 <div className="flex-shrink-0 pt-4 flex gap-2">
-                                    <button onClick={() => onEdit(currentPage)} className="flex items-center gap-2 bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-full hover:bg-gray-300 transition-colors"><EditIcon /> Edit</button>
+                                    <button onClick={() => onEdit(currentPage)} className="flex items-center gap-2 bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-full hover:bg-stone-300 transition-colors"><EditIcon /> Edit</button>
                                     <button onClick={() => onDelete(currentPage)} className="flex items-center gap-2 bg-red-500 text-white font-bold py-2 px-4 rounded-full hover:bg-red-600 transition-colors"><TrashIcon /> Delete</button>
                                 </div>
                             </div>
                         </div>
                         {pageGroup.length > 1 && (
                             <>
-                                <button onClick={e => { e.stopPropagation(); handlePrev(); }} className="absolute left-2 md:left-8 text-white bg-black bg-opacity-25 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowLeftIcon /></button>
-                                <button onClick={e => { e.stopPropagation(); handleNext(); }} className="absolute right-2 md:right-8 text-white bg-black bg-opacity-25 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowRightIcon /></button>
+                                <button onClick={e => { e.stopPropagation(); handlePrev(); }} className="absolute left-2 md:left-8 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowLeftIcon /></button>
+                                <button onClick={e => { e.stopPropagation(); handleNext(); }} className="absolute right-2 md:right-8 text-white bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-colors"><ArrowRightIcon /></button>
                             </>
                         )}
-                        <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-rose-300"><CloseIcon /></button>
+                        <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-stone-300"><CloseIcon /></button>
                     </div>
                 </div>
             );
@@ -312,18 +338,15 @@
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 if (!title || !date || !text || !imagePreview) {
-                    setError('Please fill out all fields and select an image.');
-                    return;
+                    setError('Please fill out all fields and select an image.'); return;
                 }
-                setError('');
-                setIsSaving(true);
-
+                setError(''); setIsSaving(true);
                 try {
                     await onSave({ title, date, text, imageFile, existingImageUrl: pageToEdit?.imageUrl }, pageToEdit?.id);
                     onClose(); 
                 } catch (err) {
                     console.error("Detailed Save Error:", err);
-                    setError(err.message || "An unknown error occurred. Please check the console for details.");
+                    setError(err.message || "An unknown error occurred.");
                     setIsSaving(false); 
                 }
             };
@@ -340,30 +363,30 @@
             const saveButtonText = pageToEdit ? "Update Memory" : "Save Memory";
 
             return (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-                    <div ref={modalRef} className="bg-white rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-                        <h2 className="text-3xl font-bold text-rose-800 text-center p-8 pb-4 flex-shrink-0">{modalTitle}</h2>
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+                    <div ref={modalRef} className="bg-white rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col animate-fade-in">
+                        <h2 className="font-heading text-3xl font-bold text-stone-800 text-center p-8 pb-4 flex-shrink-0">{modalTitle}</h2>
                         <form onSubmit={handleSubmit} className="flex flex-col flex-grow overflow-y-auto">
                             <div className="px-8 flex-grow">
                                 <div className="mb-4">
-                                    <label htmlFor="title" className="block text-gray-700 font-bold mb-2">Title</label>
-                                    <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-400" required />
+                                    <label htmlFor="title" className="block text-stone-700 font-bold mb-2">Title</label>
+                                    <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-stone-400" required />
                                 </div>
                                 <div className="mb-4">
-                                    <label htmlFor="date" className="block text-gray-700 font-bold mb-2">Date</label>
-                                    <input type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-400" required />
+                                    <label htmlFor="date" className="block text-stone-700 font-bold mb-2">Date</label>
+                                    <input type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-stone-400" required />
                                 </div>
                                 <div className="mb-6">
-                                    <label htmlFor="text" className="block text-gray-700 font-bold mb-2">Our Story</label>
-                                    <textarea id="text" value={text} onChange={(e) => setText(e.target.value)} rows="4" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-400" required></textarea>
+                                    <label htmlFor="text" className="block text-stone-700 font-bold mb-2">Our Story</label>
+                                    <textarea id="text" value={text} onChange={(e) => setText(e.target.value)} rows="4" className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-stone-400" required></textarea>
                                 </div>
                                 <div className="mb-6">
-                                    <label className="block text-gray-700 font-bold mb-2">Photo</label>
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                    <label className="block text-stone-700 font-bold mb-2">Photo</label>
+                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-stone-300 border-dashed rounded-md">
                                         <div className="space-y-1 text-center">
                                             {imagePreview ? <img src={imagePreview} alt="Preview" className="mx-auto h-32 w-auto rounded-md" /> : <PhotoIcon />}
-                                            <div className="flex text-sm text-gray-600">
-                                                <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-rose-600 hover:text-rose-500">
+                                            <div className="flex text-sm text-stone-600">
+                                                <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-stone-700 hover:text-stone-600">
                                                     <span>{pageToEdit ? 'Change photo' : 'Upload a file'}</span>
                                                     <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" />
                                                 </label>
@@ -373,9 +396,9 @@
                                 </div>
                                 {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
                             </div>
-                            <div className="p-8 pt-4 border-t border-gray-200 flex-shrink-0 flex items-center justify-end gap-4">
-                                <button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-full hover:bg-gray-300" disabled={isSaving}>Cancel</button>
-                                <button type="submit" className="bg-rose-500 text-white font-bold py-2 px-4 rounded-full hover:bg-rose-600 disabled:bg-rose-300" disabled={isSaving}>{isSaving ? 'Saving...' : saveButtonText}</button>
+                            <div className="p-8 pt-4 border-t border-stone-200 flex-shrink-0 flex items-center justify-end gap-4">
+                                <button type="button" onClick={onClose} className="bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-full hover:bg-stone-300" disabled={isSaving}>Cancel</button>
+                                <button type="submit" className="bg-stone-700 text-white font-bold py-2 px-4 rounded-full hover:bg-stone-800 disabled:bg-stone-300" disabled={isSaving}>{isSaving ? 'Saving...' : saveButtonText}</button>
                             </div>
                         </form>
                     </div>
