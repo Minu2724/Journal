@@ -23,12 +23,12 @@
         window.firebaseAuth = { getAuth, signInAnonymously, onAuthStateChanged };
     </script>
     <script type="module">
-        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        window.firebaseFirestore = { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp };
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        window.firebaseFirestore = { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, doc, updateDoc, deleteDoc };
     </script>
     <script type="module">
-        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-        window.firebaseStorage = { getStorage, ref, uploadString, getDownloadURL };
+        import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+        window.firebaseStorage = { getStorage, ref, uploadString, getDownloadURL, deleteObject };
     </script>
 
     <style>
@@ -36,6 +36,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
         body {
             font-family: 'Playfair Display', serif;
+        }
+        /* Style for the hover effect on memory cards */
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1;
         }
     </style>
 </head>
@@ -45,89 +49,85 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // --- Your Firebase Config ---
         const firebaseConfig = {
          apiKey: "AIzaSyBMB4L4afnqvXhyGaeipK9n8J1ngPi_aXo",
          authDomain: "journal-5f937.firebaseapp.com",
          projectId: "journal-5f937",
-         storageBucket: "journal-5f937.firebasestorage.app",
+         storageBucket: "journal-5f937.appspot.com",
          messagingSenderId: "981844182431",
          appId: "1:981844182431:web:2da6941df9acad21fc69aa",
          measurementId: "G-DZ5VY3Z68B"
-};
+        };
 
 
         // --- SVG Icons ---
-        const PlusIcon = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-        );
-
-        const PhotoIcon = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-        );
-
-        const HeartIcon = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline-block text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-            </svg>
-        );
+        const PlusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>;
+        const PhotoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
+        const HeartIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline-block text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" /></svg>;
+        const EditIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" /></svg>;
+        const TrashIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" /></svg>;
 
         // --- Main App Component ---
         function App() {
             const [db, setDb] = useState(null);
             const [storage, setStorage] = useState(null);
             const [isAuthReady, setIsAuthReady] = useState(false);
-            const [pages, setPages] = useState([]);
+            const [pages, setPages] = useState({});
             const [isModalOpen, setIsModalOpen] = useState(false);
+            const [editingPage, setEditingPage] = useState(null);
             const [isLoading, setIsLoading] = useState(true);
             const [error, setError] = useState('');
 
             // --- Firebase Initialization ---
             useEffect(() => {
                 if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
-                    setError("Firebase config is missing. Please follow the instructions in the HTML file.");
+                    setError("Firebase config is missing.");
                     setIsLoading(false);
                     return;
                 }
-                
                 try {
                     const app = window.firebaseApp.initializeApp(firebaseConfig);
                     const authInstance = window.firebaseAuth.getAuth(app);
                     setDb(window.firebaseFirestore.getFirestore(app));
                     setStorage(window.firebaseStorage.getStorage(app));
-
                     window.firebaseAuth.onAuthStateChanged(authInstance, (user) => {
-                        if (!user) {
-                            window.firebaseAuth.signInAnonymously(authInstance).catch(err => console.error(err));
-                        }
+                        if (!user) window.firebaseAuth.signInAnonymously(authInstance).catch(console.error);
                         setIsAuthReady(true);
                     });
                 } catch (e) {
-                    console.error("Firebase initialization error:", e);
-                    setError("Could not initialize Firebase. Please check your config.");
+                    console.error("Firebase init error:", e);
+                    setError("Could not initialize Firebase.");
                     setIsLoading(false);
                 }
             }, []);
 
-            // --- Data Fetching from Firestore ---
+            // --- Data Fetching and Grouping ---
             useEffect(() => {
                 if (db && isAuthReady) {
                     const q = window.firebaseFirestore.query(window.firebaseFirestore.collection(db, "pages"));
                     const unsubscribe = window.firebaseFirestore.onSnapshot(q, (querySnapshot) => {
                         const pagesData = [];
-                        querySnapshot.forEach((doc) => {
-                            pagesData.push({ id: doc.id, ...doc.data() });
-                        });
-                        pagesData.sort((a, b) => new Date(b.date) - new Date(a.date));
-                        setPages(pagesData);
+                        querySnapshot.forEach((doc) => pagesData.push({ id: doc.id, ...doc.data() }));
+                        
+                        // Group pages first by date, then by title
+                        const grouped = pagesData.reduce((acc, page) => {
+                            const { date, title } = page;
+                            if (!acc[date]) {
+                                acc[date] = {};
+                            }
+                            if (!acc[date][title]) {
+                                acc[date][title] = [];
+                            }
+                            acc[date][title].push(page);
+                            return acc;
+                        }, {});
+                        
+                        setPages(grouped);
                         setIsLoading(false);
                     }, (err) => {
                         console.error("Firestore error:", err);
-                        setError("Could not load memories from the database.");
+                        setError("Could not load memories.");
                         setIsLoading(false);
                     });
                     return () => unsubscribe();
@@ -135,35 +135,61 @@
             }, [db, isAuthReady]);
 
             // --- Handlers ---
-            const handleAddPage = async (pageData) => {
+            const handleSavePage = async (pageData, pageId) => {
                 if (!db || !storage) return;
-                const { title, date, text, imageFile } = pageData;
-                try {
-                    const imageRef = window.firebaseStorage.ref(storage, `images/${Date.now()}-${imageFile.name}`);
-                    await window.firebaseStorage.uploadString(imageRef, imageFile.dataUrl, 'data_url');
-                    const imageUrl = await window.firebaseStorage.getDownloadURL(imageRef);
+                const { title, date, text, imageFile, existingImageUrl } = pageData;
+                let imageUrl = existingImageUrl;
 
-                    await window.firebaseFirestore.addDoc(window.firebaseFirestore.collection(db, "pages"), {
-                        title, date, text, imageUrl,
-                        createdAt: window.firebaseFirestore.serverTimestamp(),
-                    });
-                    setIsModalOpen(false);
+                try {
+                    if (imageFile) {
+                        const imageRef = window.firebaseStorage.ref(storage, `images/${Date.now()}-${imageFile.name}`);
+                        await window.firebaseStorage.uploadString(imageRef, imageFile.dataUrl, 'data_url');
+                        imageUrl = await window.firebaseStorage.getDownloadURL(imageRef);
+                    }
+
+                    const data = { title, date, text, imageUrl };
+
+                    if (pageId) {
+                        const pageRef = window.firebaseFirestore.doc(db, "pages", pageId);
+                        await window.firebaseFirestore.updateDoc(pageRef, data);
+                    } else {
+                        data.createdAt = window.firebaseFirestore.serverTimestamp();
+                        await window.firebaseFirestore.addDoc(window.firebaseFirestore.collection(db, "pages"), data);
+                    }
+                    
+                    closeModal();
                 } catch (err) {
-                    console.error("Error adding page:", err);
-                    alert("Failed to add memory. Please try again.");
+                    console.error("Error saving page:", err);
+                    alert("Failed to save memory. Please try again.");
+                }
+            };
+
+            const handleDeletePage = async (page) => {
+                if (!db || !storage || !window.confirm(`Are you sure you want to delete "${page.title}"?`)) return;
+                
+                try {
+                    await window.firebaseFirestore.deleteDoc(window.firebaseFirestore.doc(db, "pages", page.id));
+                    const imageRef = window.firebaseStorage.ref(storage, page.imageUrl);
+                    await window.firebaseStorage.deleteObject(imageRef);
+                } catch (err) {
+                    console.error("Error deleting page:", err);
+                    alert("Failed to delete memory.");
                 }
             };
             
-            if (error) {
-                return (
-                    <div className="h-screen flex items-center justify-center bg-red-100 text-red-800 p-4">
-                        <div className="text-center">
-                            <h2 className="text-2xl font-bold mb-2">Something went wrong!</h2>
-                            <p>{error}</p>
-                        </div>
-                    </div>
-                );
-            }
+            const openModalForEdit = (page) => {
+                setEditingPage(page);
+                setIsModalOpen(true);
+            };
+
+            const closeModal = () => {
+                setIsModalOpen(false);
+                setEditingPage(null);
+            };
+
+            const sortedDates = Object.keys(pages).sort((a, b) => new Date(b) - new Date(a));
+
+            if (error) return <div className="h-screen flex items-center justify-center bg-red-100 text-red-800 p-4"><div className="text-center"><h2 className="text-2xl font-bold mb-2">Something went wrong!</h2><p>{error}</p></div></div>;
 
             return (
                 <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -172,56 +198,75 @@
                         <p className="text-rose-600 mt-2 text-lg">A collection of our favorite moments <HeartIcon /></p>
                     </header>
                     <div className="text-center mb-8">
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="bg-rose-500 text-white font-bold py-3 px-6 rounded-full hover:bg-rose-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center mx-auto gap-2"
-                        >
+                        <button onClick={() => setIsModalOpen(true)} className="bg-rose-500 text-white font-bold py-3 px-6 rounded-full hover:bg-rose-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center mx-auto gap-2">
                             <PlusIcon /> Add New Memory
                         </button>
                     </div>
-                    {isModalOpen && <AddPageModal onClose={() => setIsModalOpen(false)} onSave={handleAddPage} />}
+                    {isModalOpen && <MemoryModal onClose={closeModal} onSave={handleSavePage} pageToEdit={editingPage} />}
                     <main>
-                        {isLoading ? (
-                            <div className="text-center text-rose-500">Loading memories...</div>
-                        ) : pages.length === 0 ? (
+                        {isLoading ? <div className="text-center text-rose-500">Loading memories...</div>
+                        : sortedDates.length === 0 ? (
                             <div className="text-center text-gray-500 p-10 bg-white rounded-lg shadow-md">
                                 <h2 className="text-2xl font-semibold mb-2">Your scrapbook is empty!</h2>
                                 <p>Click "Add New Memory" to save your first special moment together.</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {pages.map(page => <ScrapbookPage key={page.id} page={page} />)}
+                            <div className="space-y-12">
+                                {sortedDates.map(date => <DateGroup key={date} date={date} titleGroups={pages[date]} onEdit={openModalForEdit} onDelete={handleDeletePage} />)}
                             </div>
                         )}
                     </main>
-                    <footer className="text-center mt-12 text-sm text-rose-400">
-                        <p>Made with love, for us.</p>
-                    </footer>
+                    <footer className="text-center mt-12 text-sm text-rose-400"><p>Made with love, for us.</p></footer>
+                </div>
+            );
+        }
+
+        // --- DateGroup Component ---
+        function DateGroup({ date, titleGroups, onEdit, onDelete }) {
+            const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const sortedTitles = Object.keys(titleGroups).sort();
+
+            return (
+                <section>
+                    <h2 className="text-2xl font-bold text-rose-700 mb-4 pb-2 border-b-2 border-rose-200">{formattedDate}</h2>
+                    {sortedTitles.map(title => (
+                        <TitleGroup key={title} title={title} memories={titleGroups[title]} onEdit={onEdit} onDelete={onDelete} />
+                    ))}
+                </section>
+            );
+        }
+
+        // --- TitleGroup Component ---
+        function TitleGroup({ title, memories, onEdit, onDelete }) {
+            return (
+                <div className="mt-6 mb-8">
+                    <h3 className="text-xl font-semibold text-rose-600 mb-4">{title}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {memories.map(page => <ScrapbookPage key={page.id} page={page} onEdit={onEdit} onDelete={onDelete} />)}
+                    </div>
                 </div>
             );
         }
 
         // --- ScrapbookPage Component ---
-        function ScrapbookPage({ page }) {
+        function ScrapbookPage({ page, onEdit, onDelete }) {
             return (
-                <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 group">
-                    <img 
-                        src={page.imageUrl} 
-                        alt={page.title} 
-                        className="w-full h-56 object-cover"
-                        onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/600x400/fecdd3/701a75?text=Image+Not+Found'; }}
-                    />
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 group relative">
+                    <div className="absolute top-0 right-0 p-2 z-10 bg-black bg-opacity-50 rounded-bl-lg flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => onEdit(page)} className="text-white hover:text-rose-300"><EditIcon /></button>
+                        <button onClick={() => onDelete(page)} className="text-white hover:text-rose-300"><TrashIcon /></button>
+                    </div>
+                    <img src={page.imageUrl} alt={page.title} className="w-full h-56 object-cover" onError={(e) => { e.target.src='https://placehold.co/600x400/fecdd3/701a75?text=Image+Not+Found'; }} />
                     <div className="p-6">
-                        <p className="text-sm text-gray-500 mb-1">{new Date(page.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                        <h2 className="text-2xl font-bold text-rose-800 mb-2">{page.title}</h2>
+                        {/* Title is now displayed in TitleGroup, so we can remove it from here to avoid repetition */}
                         <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{page.text}</p>
                     </div>
                 </div>
             );
         }
 
-        // --- AddPageModal Component ---
-        function AddPageModal({ onClose, onSave }) {
+        // --- MemoryModal Component ---
+        function MemoryModal({ onClose, onSave, pageToEdit }) {
             const [title, setTitle] = useState('');
             const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
             const [text, setText] = useState('');
@@ -230,6 +275,15 @@
             const [isSaving, setIsSaving] = useState(false);
             const [error, setError] = useState('');
             const modalRef = useRef();
+
+            useEffect(() => {
+                if (pageToEdit) {
+                    setTitle(pageToEdit.title);
+                    setDate(pageToEdit.date);
+                    setText(pageToEdit.text);
+                    setImagePreview(pageToEdit.imageUrl);
+                }
+            }, [pageToEdit]);
 
             const handleImageChange = (e) => {
                 const file = e.target.files[0];
@@ -245,13 +299,13 @@
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                if (!title || !date || !text || !imageFile) {
+                if (!title || !date || !text || !imagePreview) {
                     setError('Please fill out all fields and select an image.');
                     return;
                 }
                 setError('');
                 setIsSaving(true);
-                await onSave({ title, date, text, imageFile });
+                await onSave({ title, date, text, imageFile, existingImageUrl: pageToEdit?.imageUrl }, pageToEdit?.id);
                 setIsSaving(false);
             };
 
@@ -263,10 +317,13 @@
                 return () => document.removeEventListener("mousedown", handleClickOutside);
             }, [onClose]);
 
+            const modalTitle = pageToEdit ? "Edit Memory" : "Add a New Memory";
+            const saveButtonText = pageToEdit ? "Update Memory" : "Save Memory";
+
             return (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
                     <div ref={modalRef} className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-lg max-h-full overflow-y-auto">
-                        <h2 className="text-3xl font-bold text-rose-800 mb-6 text-center">Add a New Memory</h2>
+                        <h2 className="text-3xl font-bold text-rose-800 mb-6 text-center">{modalTitle}</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-bold mb-2">Title</label>
@@ -287,18 +344,17 @@
                                         {imagePreview ? <img src={imagePreview} alt="Preview" className="mx-auto h-32 w-auto rounded-md" /> : <PhotoIcon />}
                                         <div className="flex text-sm text-gray-600">
                                             <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-rose-600 hover:text-rose-500">
-                                                <span>Upload a file</span>
+                                                <span>{pageToEdit ? 'Change photo' : 'Upload a file'}</span>
                                                 <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" />
                                             </label>
                                         </div>
-                                        <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
                                     </div>
                                 </div>
                             </div>
                             {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
                             <div className="flex items-center justify-end gap-4">
                                 <button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-full hover:bg-gray-300" disabled={isSaving}>Cancel</button>
-                                <button type="submit" className="bg-rose-500 text-white font-bold py-2 px-4 rounded-full hover:bg-rose-600 disabled:bg-rose-300" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Memory'}</button>
+                                <button type="submit" className="bg-rose-500 text-white font-bold py-2 px-4 rounded-full hover:bg-rose-600 disabled:bg-rose-300" disabled={isSaving}>{isSaving ? 'Saving...' : saveButtonText}</button>
                             </div>
                         </form>
                     </div>
